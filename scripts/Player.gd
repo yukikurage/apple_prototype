@@ -1,9 +1,9 @@
 extends KinematicBody2D
 
 export var WALK_SPEED : float = 800
-export var GRAVITY : float = 2500
+export var GRAVITY : float = 3000
 export var JUMP_VELOCITY : float = 600
-export var JUMP_ACCELERATION : float = 300
+export var JUMP_ACCELERATION : float = 400
 export var MAX_FALL_SPEED : float = 1000
 export var BURST_FALL_SPEED : float = 3000
 export var BURST_SLIDE_SPEED : float = 2500
@@ -38,7 +38,7 @@ func _physics_process(delta):
 	if Input.is_action_pressed("ui_down"):
 		is_burst_fall = true
 		
-	if Input.is_action_pressed("burst_slide") && is_burst_slide == STOP:
+	if Input.is_action_just_pressed("burst_slide") && is_burst_slide == STOP:
 		$BurstSlideTimer.start()
 		if is_look_right:
 			is_burst_slide = RIGHT
@@ -49,13 +49,10 @@ func _physics_process(delta):
 
 	match move_state_x:
 		LEFT:
-			$AnimatedSprite.animation = "walk"
 			velocity.x = -WALK_SPEED
 		RIGHT:
-			$AnimatedSprite.animation = "walk"
 			velocity.x = WALK_SPEED
 		STOP:
-			$AnimatedSprite.animation = "idle"
 			velocity.x = 0
 			
 	if velocity.y > MAX_FALL_SPEED:
@@ -74,18 +71,39 @@ func _physics_process(delta):
 			
 	move_and_slide(velocity, Vector2(0, -1))
 	
-	if is_on_floor():
+	var is_on_floor = is_on_floor()
+	
+	if is_on_floor:
 		is_burst_fall = false
 	if is_on_ceiling():
 		velocity.y = 0
 	if is_jump_start:
-		if is_on_floor():
+		if is_on_floor:
 			velocity.y = -JUMP_VELOCITY
 		else:
 			if velocity.y > -JUMP_VELOCITY:
 				velocity.y -= JUMP_ACCELERATION
 			else:
 				velocity.y = -JUMP_VELOCITY
+	
+	match move_state_x:
+		LEFT:
+			if is_on_floor:
+				$AnimatedSprite.animation = "walk"
+			else:
+				$AnimatedSprite.animation = "fly"
+		RIGHT:
+			if is_on_floor:
+				$AnimatedSprite.animation = "walk"
+			else:
+				$AnimatedSprite.animation = "fly"
+		STOP:
+			$AnimatedSprite.animation = "idle"
+	
+	if is_burst_fall:
+		$AnimatedSprite.animation = "fall"
+	if is_burst_slide != STOP:
+		$AnimatedSprite.animation = "fly"
 
 func _on_BurstSlideTimer_timeout():
 	is_burst_slide = STOP
