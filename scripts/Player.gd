@@ -76,6 +76,8 @@ func _physics_process(delta):
 	
 	if is_on_floor():
 		is_burst_fall = false
+	if is_on_ceiling():
+		velocity.y = 0
 	if is_jump_start:
 		if is_on_floor():
 			velocity.y = -JUMP_VELOCITY

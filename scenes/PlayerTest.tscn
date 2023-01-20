@@ -4,7 +4,16 @@
 
 [node name="PlayerTest" type="Node2D"]
 
+[node name="Ground2" type="StaticBody2D" parent="."]
+
+[node name="Polygon2D" type="Polygon2D" parent="Ground2"]
+polygon = PoolVector2Array( 997, 490, 860, 613, -34, 608, -89, 490 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Ground2"]
+polygon = PoolVector2Array( 997, 490, 860, 613, -34, 608, -89, 490 )
+
 [node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2( -27, -586 )
 
 [node name="Polygon2D" type="Polygon2D" parent="Ground"]
 polygon = PoolVector2Array( 997, 490, 860, 613, -34, 608, -89, 490 )
