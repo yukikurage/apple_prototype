@@ -1,23 +1,46 @@
 extends KinematicBody2D
 
-export var WALK_SPEED : float = 800
-export var GRAVITY : float = 3000
+signal damage_received
+
+export var WALK_SPEED : float = 500
+export var GRAVITY : float = 5000
 export var JUMP_VELOCITY : float = 600
-export var JUMP_ACCELERATION : float = 400
+export var JUMP_ACCELERATION : float = 600
 export var MAX_FALL_SPEED : float = 1000
-export var BURST_FALL_SPEED : float = 3000
-export var BURST_SLIDE_SPEED : float = 2500
+export var BURST_FALL_SPEED : float = 2000
+export var BURST_SLIDE_SPEED : float = 2000
 
 enum {LEFT, RIGHT, STOP}
 var move_state_x = STOP
 var is_look_right = true
 var velocity = Vector2()
 
-var is_burst_fall = false
+# var is_burst_fall = false
 var is_burst_slide = STOP
+var is_can_burst_slide = true
 
-func _ready():
-	pass
+var hit_point : int = 10
+var is_muteki = false;
+	
+func _on_BurstSlideTimer_timeout():
+	is_burst_slide = STOP
+	is_can_burst_slide = false
+	$BurstSlideCoolTimer.start()
+	
+func _on_BurstSlideCoolTimer_timeout():
+	is_can_burst_slide = true
+
+func _on_Timer_timeout():
+	is_muteki = false
+	$Blink.stop()
+
+func receive_damage(enemy : Enemy):
+	emit_signal("damage_received")
+	if !is_muteki:
+		hit_point -= enemy.attack_point
+		is_muteki = true
+		$MutekiTimer.start()
+		$Blink.play("Blink")
 	
 func _physics_process(delta):
 	velocity.y += delta * GRAVITY
@@ -36,14 +59,15 @@ func _physics_process(delta):
 		is_jump_start = true
 	
 	if Input.is_action_pressed("ui_down"):
-		is_burst_fall = true
+		velocity.y = MAX_FALL_SPEED
 		
 	if Input.is_action_just_pressed("burst_slide") && is_burst_slide == STOP:
-		$BurstSlideTimer.start()
-		if is_look_right:
-			is_burst_slide = RIGHT
-		else:
-			is_burst_slide = LEFT
+		if is_can_burst_slide:
+			$BurstSlideTimer.start()
+			if is_look_right:
+				is_burst_slide = RIGHT
+			else:
+				is_burst_slide = LEFT
 		
 	$AnimatedSprite.flip_h = !is_look_right
 
@@ -58,8 +82,8 @@ func _physics_process(delta):
 	if velocity.y > MAX_FALL_SPEED:
 		velocity.y = MAX_FALL_SPEED
 		
-	if is_burst_fall:
-		velocity.y = BURST_FALL_SPEED 
+	# if is_burst_fall:
+	# 	velocity.y = BURST_FALL_SPEED 
 		
 	match is_burst_slide:
 		LEFT:
@@ -73,8 +97,6 @@ func _physics_process(delta):
 	
 	var is_on_floor = is_on_floor()
 	
-	if is_on_floor:
-		is_burst_fall = false
 	if is_on_ceiling():
 		velocity.y = 0
 	if is_jump_start:
@@ -100,10 +122,12 @@ func _physics_process(delta):
 		STOP:
 			$AnimatedSprite.animation = "idle"
 	
-	if is_burst_fall:
-		$AnimatedSprite.animation = "fall"
+	# if is_burst_fall:
+		# $AnimatedSprite.animation = "fall"
 	if is_burst_slide != STOP:
 		$AnimatedSprite.animation = "fly"
-
-func _on_BurstSlideTimer_timeout():
-	is_burst_slide = STOP
+	
+func _on_EnemyCollisionArea_body_entered(body : Node):
+	print(body)
+	if body.has_method("get_enemy"):
+		receive_damage(body.get_enemy())
