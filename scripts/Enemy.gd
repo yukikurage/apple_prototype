@@ -5,3 +5,6 @@ var velocity = Vector2(0, 0)
 
 func _init(attack_point : int):
 	self.attack_point= attack_point
+
+func on_attack():
+	pass

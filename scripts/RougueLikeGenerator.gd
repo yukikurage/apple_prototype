@@ -64,7 +64,6 @@ func generate_room():
 	var size = rand_range_rect(room_size_range)
 	var pos = rand_range_rect(Rect2(base_pos - size, size))
 	var room = Rect2(pos, size).clip(get_map_rect())
-	print(room)
 	map_cells.set_bit_rect(room, true)
 			
 func rand_range_i(left : int, right : int):
@@ -83,8 +82,7 @@ func generate_noise():
 				if (map_cells.get_bit(Vector2(x - 1, y)) 
 					|| map_cells.get_bit(Vector2(x, y - 1)) 
 					|| map_cells.get_bit(Vector2(x + 1, y)) 
-					|| map_cells.get_bit(Vector2(x, y + 1))
-				   ) && noise.get_noise_2d(x, y) >= 0:
+					|| map_cells.get_bit(Vector2(x, y + 1))) && noise.get_noise_2d(x, y) >= 0:
 					map_cells_copy.set_bit(Vector2(x, y), true)
 	map_cells = map_cells_copy
 

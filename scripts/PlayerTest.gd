@@ -3,11 +3,14 @@ extends Node2D
 const CELL_SIZE : int = 16 * 4
 
 var map_size : Vector2 = Vector2(160, 200)
-var max_enemy_count : int = 100
+var max_enemy_count : int = 15
 var spawn_min_distance : int = 20
+var spawn_max_distance : int = 50
 var rougue : RougueLikeGenerator
 
-var slimeScene = preload("res://scenes/enemies/Slime.tscn")
+var slimeScene : PackedScene = preload("res://scenes/enemies/Slime.tscn")
+var ghostScene : PackedScene = preload("res://scenes/enemies/Ghost.tscn")
+var darkKurageScene : PackedScene = preload("res://scenes/enemies/DarkKurage.tscn")
 
 func _init():
 	randomize()
@@ -21,9 +24,9 @@ func _ready():
 	$TileMap.update_bitmask_region()
 	$FollowCamera.set_followee($Player)
 
-func _on_Player_damage_received():
+func _on_Player_damage_received(enemy : Node2D):
 	$HUD/HitPoint.text = str($Player.hit_point)
-	$FollowCamera.wiggle(0.6, 0.15)
+	$FollowCamera.wiggle(enemy.attack_point * 0.6, 0.1)
 	
 func rand_array_elem(array : Array):
 	return array[randi() % array.size()]
@@ -42,9 +45,9 @@ func get_floors(margin : int) -> Array:
 	
 func is_in_distance(pos : Vector2) -> bool:
 	var dist = $Player.position / CELL_SIZE - pos
-	return (spawn_min_distance <= abs(dist.x) || spawn_min_distance <= abs(dist.y))
+	return (spawn_min_distance <= abs(dist.x) || spawn_min_distance <= abs(dist.y)) && abs(dist.x) <= spawn_max_distance && abs(dist.y) <= spawn_max_distance
 
-func spawn(margin : int, enemyScene : PackedScene):
+func spawn(margin : int, enemy : Node2D):
 	var poses = get_floors(margin)
 	var filterd = []
 	for pos in poses:
@@ -53,10 +56,28 @@ func spawn(margin : int, enemyScene : PackedScene):
 	if filterd.size() == 0:
 		return
 	var pos = rand_array_elem(filterd)
-	var enemy = enemyScene.instance()
 	enemy.position = pos * CELL_SIZE
 	$Enemies.add_child(enemy)
 
+func despawn_enemies():
+	for enemy in $Enemies.get_children():
+		var dist = ($Player.position - enemy.position) / CELL_SIZE 
+		if abs(dist.x) > spawn_max_distance || abs(dist.y) > spawn_max_distance:
+			enemy.queue_free()
+
 func _on_SpawnTimer_timeout():
 	if $Enemies.get_child_count() < max_enemy_count:
-		spawn(3, slimeScene)
+		var rand = randi() % 10
+		if rand <= 6:
+			var slime = slimeScene.instance()
+			slime.initialize(rougue.get_bitmap(), $Player)
+			spawn(3, slime)
+		elif rand <= 8:
+			var ghost = ghostScene.instance()
+			ghost.initialize(rougue.get_bitmap(), $Player)
+			spawn(2, ghost)
+		else:
+			var darkKurage = darkKurageScene.instance()
+			darkKurage.initialize(rougue.get_bitmap(), $Player)
+			spawn(3, darkKurage)
+	despawn_enemies()

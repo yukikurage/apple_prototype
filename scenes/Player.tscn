@@ -138,11 +138,11 @@ position = Vector2( 0.375, 2 )
 shape = SubResource( 2 )
 
 [node name="BurstSlideTimer" type="Timer" parent="."]
-wait_time = 0.1
+wait_time = 0.15
 one_shot = true
 
 [node name="BurstSlideCoolTimer" type="Timer" parent="."]
-wait_time = 0.15
+wait_time = 0.5
 one_shot = true
 
 [node name="MutekiTimer" type="Timer" parent="."]

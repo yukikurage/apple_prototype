@@ -5,27 +5,41 @@ var MAX_FALL_SPEED : float = 2000
 var JUMP_SPEED : float = 1300
 var SPEED : float = 400
 
-var enemy
+var bitMap : BitMap
+var player : Node2D
 
-func get_enemy() -> Enemy:
-	return enemy
+var attack_point = 1
+var velocity = Vector2(0, 0)
+	
+func _ready():
+	add_to_group("enemies")
 
-func _init():
-	enemy = Enemy.new(1)
+func initialize(bitMap : BitMap, player : Node2D):
+	self.bitMap = bitMap
+	self.player = player
+
+func after_attack():
+	velocity.y = -JUMP_SPEED
+	var direction
+	if player.position.x > position.x:
+		direction = 1
+	else:
+		direction = -1
+	velocity.x = SPEED * direction
 	
 func _physics_process(delta):
-	enemy.velocity.y += delta * 5000
+	velocity.y += delta * 5000
 			
-	if enemy.velocity.y > MAX_FALL_SPEED:
-		enemy.velocity.y = MAX_FALL_SPEED
+	if velocity.y > MAX_FALL_SPEED:
+		velocity.y = MAX_FALL_SPEED
 
-	move_and_slide(enemy.velocity, Vector2(0, -1))
+	move_and_slide(velocity, Vector2(0, -1))
 	
 	if is_on_floor():
-		enemy.velocity.x = 0
+		velocity.x = 0
 	
 
 func _on_JumpTimer_timeout():
-	enemy.velocity.y = -JUMP_SPEED
+	velocity.y = -JUMP_SPEED
 	var direction = (randi() % 3) - 1
-	enemy.velocity.x = SPEED * direction
+	velocity.x = SPEED * direction

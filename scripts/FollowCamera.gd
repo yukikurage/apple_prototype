@@ -34,9 +34,7 @@ func _on_WigglePulseTimer_timeout():
 			wiggling = false
 		else:
 			wiggle_start = wiggle_target
-			var rand_angle = rand_range(0, 2 * PI)
-			wiggle_target = Vector2(cos(rand_angle), sin(rand_angle)) * wiggle_strength
-			print(wiggle_target)
+			wiggle_target = - wiggle_target
 	else:
 		wiggle_start = Vector2(0, 0)
 		wiggle_target = Vector2(0, 0)

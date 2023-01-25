@@ -67,6 +67,6 @@ anims/RESET = SubResource( 2 )
 [node name="Light2D" type="Light2D" parent="."]
 texture = SubResource( 3 )
 texture_scale = 4.0
-color = Color( 0.270588, 0.270588, 0.270588, 1 )
+color = Color( 0.341176, 0.341176, 0.341176, 1 )
 range_layer_min = -1
 range_layer_max = -1

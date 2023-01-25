@@ -33,14 +33,21 @@ func _on_BurstSlideCoolTimer_timeout():
 func _on_Timer_timeout():
 	is_muteki = false
 	$Blink.stop()
+	modulate.a = 1
+	var overlapping_bodies = $EnemyCollisionArea.get_overlapping_bodies()
+	if overlapping_bodies.size() > 0:
+		if overlapping_bodies[0].is_in_group("enemies"):
+			receive_damage(overlapping_bodies[0])
 
-func receive_damage(enemy : Enemy):
-	emit_signal("damage_received")
-	if !is_muteki:
+func receive_damage(enemy : Node2D):
+	if enemy.is_in_group("enemies") && !is_muteki:
+		emit_signal("damage_received", enemy)
 		hit_point -= enemy.attack_point
 		is_muteki = true
 		$MutekiTimer.start()
 		$Blink.play("Blink")
+		if enemy.has_method("after_attack"):	
+			enemy.after_attack()
 	
 func _physics_process(delta):
 	velocity.y += delta * GRAVITY
@@ -128,6 +135,6 @@ func _physics_process(delta):
 		$AnimatedSprite.animation = "fly"
 	
 func _on_EnemyCollisionArea_body_entered(body : Node):
-	print(body)
-	if body.has_method("get_enemy"):
-		receive_damage(body.get_enemy())
+	is_burst_slide = STOP
+	if body.is_in_group("enemies"):
+		receive_damage(body)
