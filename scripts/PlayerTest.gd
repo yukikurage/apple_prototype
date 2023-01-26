@@ -23,10 +23,15 @@ func _ready():
 	$TileMap.make_wall(rougue.get_bitmap())
 	$TileMap.update_bitmask_region()
 	$FollowCamera.set_followee($Player)
+	$HUD/HitPoint.text = str($Player.hit_point)
+	$HUD/SkillPoint.text = str($Player.skill_point)
 
 func _on_Player_damage_received(enemy : Node2D):
 	$HUD/HitPoint.text = str($Player.hit_point)
-	$FollowCamera.wiggle(enemy.attack_point * 0.6, 0.1)
+	$FollowCamera.wiggle(enemy.attack_point * 0.6, 0.14)
+
+func _on_Player_skill_point_changed(skill_point : int):
+	$HUD/SkillPoint.text = str(skill_point)
 	
 func rand_array_elem(array : Array):
 	return array[randi() % array.size()]
@@ -81,3 +86,9 @@ func _on_SpawnTimer_timeout():
 			darkKurage.initialize(rougue.get_bitmap(), $Player)
 			spawn(3, darkKurage)
 	despawn_enemies()
+
+func _on_Button_pressed():
+	$Player.attack_skill(0)
+
+func _on_TextureButton_pressed():
+	$Player.attack_normal()

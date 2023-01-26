@@ -1,4 +1,4 @@
-[gd_scene load_steps=116 format=2]
+[gd_scene load_steps=118 format=2]
 
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://images/wall/dirt.png" type="Texture" id=2]
@@ -13,6 +13,8 @@
 [ext_resource path="res://font/Montserrat-ExtraBold.ttf" type="DynamicFontData" id=11]
 [ext_resource path="res://images/wall/dirt_back.png" type="Texture" id=12]
 [ext_resource path="res://scripts/BaclgroundLightLayer.gd" type="Script" id=13]
+[ext_resource path="res://theme/AppleTheme.tres" type="Theme" id=14]
+[ext_resource path="res://images/player/bomb.png" type="Texture" id=15]
 
 [sub_resource type="OccluderPolygon2D" id=19]
 polygon = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
@@ -730,7 +732,7 @@ shadow_enabled = true
 shadow_gradient_length = 10.0
 
 [node name="BackgroundLight" type="Light2D" parent="Player"]
-scale = Vector2( 0.25, 0.25 )
+scale = Vector2( 0.3, 0.3 )
 texture = ExtResource( 8 )
 texture_scale = 4.33
 color = Color( 0.603922, 0.533333, 0.454902, 1 )
@@ -753,12 +755,13 @@ script = ExtResource( 10 )
 one_shot = true
 
 [node name="WigglePulseTimer" type="Timer" parent="FollowCamera"]
-wait_time = 0.08
+wait_time = 0.06
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-color = Color( 0.0745098, 0.0745098, 0.0745098, 1 )
+color = Color( 0.145098, 0.145098, 0.145098, 1 )
 
 [node name="HUD" type="CanvasLayer" parent="."]
+layer = 3
 
 [node name="HitPoint" type="Label" parent="HUD"]
 margin_left = 1832.0
@@ -766,7 +769,36 @@ margin_top = 32.0
 margin_right = 1884.0
 margin_bottom = 96.0
 custom_fonts/font = SubResource( 102 )
-text = "10"
+
+[node name="SkillPoint" type="Label" parent="HUD"]
+margin_left = 56.0
+margin_top = 968.0
+margin_right = 108.0
+margin_bottom = 1032.0
+custom_fonts/font = SubResource( 102 )
+
+[node name="TextureButton" type="TextureButton" parent="HUD"]
+margin_right = 1920.0
+margin_bottom = 1080.0
+focus_mode = 0
+action_mode = 0
+enabled_focus_mode = 0
+
+[node name="Button" type="Button" parent="HUD"]
+margin_left = 1664.0
+margin_top = 736.0
+margin_right = 1856.0
+margin_bottom = 1016.0
+focus_mode = 0
+enabled_focus_mode = 0
+
+[node name="TextureRect" type="TextureRect" parent="HUD/Button"]
+margin_right = 192.0
+margin_bottom = 136.0
+theme = ExtResource( 14 )
+texture = ExtResource( 15 )
+expand = true
+stretch_mode = 7
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 103 )
@@ -776,6 +808,9 @@ wait_time = 0.5
 autostart = true
 
 [connection signal="damage_received" from="Player" to="." method="_on_Player_damage_received"]
+[connection signal="skill_point_changed" from="Player" to="." method="_on_Player_skill_point_changed"]
 [connection signal="timeout" from="FollowCamera/WiggleTimer" to="FollowCamera" method="_on_WiggleTimer_timeout"]
 [connection signal="timeout" from="FollowCamera/WigglePulseTimer" to="FollowCamera" method="_on_WigglePulseTimer_timeout"]
+[connection signal="pressed" from="HUD/TextureButton" to="." method="_on_TextureButton_pressed"]
+[connection signal="pressed" from="HUD/Button" to="." method="_on_Button_pressed"]
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_SpawnTimer_timeout"]

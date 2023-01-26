@@ -27,6 +27,7 @@ script = ExtResource( 5 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 1 )
 animation = "idle"
+frame = 1
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -35,7 +36,7 @@ rotation = 1.5708
 shape = SubResource( 2 )
 
 [node name="JumpTimer" type="Timer" parent="."]
-wait_time = 1.5
+wait_time = 1.2
 autostart = true
 
 [connection signal="timeout" from="JumpTimer" to="." method="_on_JumpTimer_timeout"]

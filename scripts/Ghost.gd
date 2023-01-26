@@ -6,10 +6,16 @@ var player : Node2D
 export var speed : float = 500.0
 
 var attack_point = 2
+var health_point = 1
 
 func initialize(bitMap : BitMap, player : Node2D):
 	self.bitMap = bitMap
 	self.player = player
+
+func damage_received(damage : int):
+	health_point -= damage
+	if health_point <= 0:
+		queue_free()
 
 func _ready():
 	add_to_group("enemies")

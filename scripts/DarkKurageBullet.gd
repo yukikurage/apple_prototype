@@ -10,6 +10,9 @@ func initialize(velocity: Vector2):
 func _ready():
 	add_to_group("enemies")
 
+func damage_received(damage: int):
+	queue_free()
+
 func after_attack():
 	queue_free()
 	

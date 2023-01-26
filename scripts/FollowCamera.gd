@@ -21,7 +21,7 @@ func set_followee(followee : Node):
 	self.followee = followee
 
 func _process(delta):
-	var current_ratio = $WigglePulseTimer.time_left / $WigglePulseTimer.wait_time
+	var current_ratio = (1 - $WigglePulseTimer.time_left / $WigglePulseTimer.wait_time)
 	var wiggle_vector = current_ratio * wiggle_target + (1 - current_ratio) * wiggle_start 
 	var velocity: Vector2 = followee.position - position
 	position += velocity * delta * COEFFICIENT + wiggle_vector

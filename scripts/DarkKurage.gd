@@ -9,6 +9,7 @@ export var speed : float = 300.0
 var warp_dist : float = 300.0
 
 var attack_point = 3
+var health_point = 1
 var is_warning = false
 var warning_range = 14
 var empty_test_range = 2
@@ -21,6 +22,11 @@ var bullet_speed = 1000.0
 func initialize(bitMap : BitMap, player : Node2D):
 	self.bitMap = bitMap
 	self.player = player
+
+func damage_received(damage : int):
+	health_point -= damage
+	if health_point <= 0:
+		queue_free()
 
 func _ready():
 	add_to_group("enemies")
